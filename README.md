@@ -137,7 +137,7 @@ ArrayValidator
   var_dump(ArrayValidator::arrayValidate($array, $proto));
   // bool(true)
 ```
-####Использование прототипа вместо параметров.
+####Использование прототипа вместо параметров (protoValidate);
 ```php
    $array = array(
     array('name' => 'vasya', 'age' => '22'),
