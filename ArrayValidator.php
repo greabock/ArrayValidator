@@ -5,11 +5,13 @@ class ArrayValidator{
     private $lasterror;
     private $circuiterror;
     
-    public function __call($name, $args){
+    public function __call($name, $args)
+    {
         $name = $name . '_' ;
         return call_user_func_array([self ,$name], $args);
     }
-    public static function __callStatic($name, $args){
+    public static function __callStatic($name, $args)
+    {
         $name = $name . '_' ;
         return call_user_func_array([self,$name], $args);
     }
