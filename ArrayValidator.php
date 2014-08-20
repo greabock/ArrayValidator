@@ -27,9 +27,10 @@ class ArrayValidator{
     }
     
     private function validateValue_($value, $rule, $circuit)
-    {
+    {   
+        
         if (!empty($this) && !empty($this->callback)) {
-            if (! call_user_func($this->callback, $value, $rule))
+            if (!call_user_func($this->callback, $value, $rule))
             {
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit);
             }
@@ -37,7 +38,7 @@ class ArrayValidator{
         }
         else
         {
-            if (!preg_match($rule, $value)){
+            if (!preg_match($rule, (string)$value)){
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit);
             }
             return true;
@@ -121,7 +122,7 @@ class ArrayValidator{
             }
             foreach ($value as $index => $element)
             {
-                if (is_string($prototype[$index]) && is_string($element))
+                if (is_string($prototype[$index]) && (is_string($element)||is_null($element)||is_numeric($element)||is_bool($element)))
                 {
                     if (!self::validateValue($element, $prototype[$index], $value))
                     {
