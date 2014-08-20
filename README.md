@@ -48,11 +48,11 @@ ArrayValidator
 список прототипов, и его длина
 ```php
   $array = array(
-        array('name' => 'vasya', 'age' => '22'),
-        array('name' => 'vasya', 'age' => '22'),
-        array('name' => 'vasya', 'age' => '22'),
-        array('name' => 'vasya', 'age' => '22'),
-        array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
   );
   $proto = array('name' => '/.*/', 'age'=> '/[0-9]+/');
 
@@ -63,5 +63,27 @@ ArrayValidator
   echo '</pre>';
   // bool(true)
   // bool(false)
+  // bool(true)
+```
+
+простой вложенный массив
+```php
+  $array = array(
+    'name' => 'vasya', 
+    'age' => '22', 
+    'phones'=> array(
+        'home'=>'255533',
+        'mobile'=>'35775533',
+        ),
+  );
+  $proto = array(
+    'name' => '/.*/',
+    'age'=> '/[0-9]+/',
+    'phones'=> array(
+        'home'=>'/[0-9]+/',
+        'mobile'=>'/[0-9]+/',
+    ),
+  );
+  var_dump(ArrayValidator::arrayValidate($array, $proto));
   // bool(true)
 ```
