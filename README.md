@@ -167,8 +167,10 @@ ArrayValidator
   
   $proto = array('name' => 'vasya', 'age' => '22');
   
-  $callback = function($value, $rule){
-    if($value == $rule){
+  $callback = function($value, $rule)
+  {
+    if ($value == $rule)
+    {
         return true;
     }
     return false;
