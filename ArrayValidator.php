@@ -10,6 +10,7 @@ class ArrayValidator{
         $name = $name . '_' ;
         return call_user_func_array([self ,$name], $args);
     }
+    
     public static function __callStatic($name, $args)
     {
         $name = $name . '_' ;
@@ -18,29 +19,32 @@ class ArrayValidator{
     
     private function arraySameKeys_(Array $array1, Array $array2)
     {
-        if (array_merge(array_diff_key($array1, $array2), array_diff_key($array2, $array1))) {
+        if (array_merge(array_diff_key($array1, $array2), array_diff_key($array2, $array1)))
+        {
             return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2]);
         }
-        else {
+        else 
+        {
             return true;
         }
     }
     
     private function validateValue_($value, $rule, $circuit)
     {
-        if(!empty($this) && !empty($this->callback)) {
-            $callback = $this->callback;
-            if(!$callback($value, $rule)){
+        if (!empty($this) && !empty($this->callback)) {
+            if (! call_user_func($this->callback, $value, $rule))
+            {
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit);
             }
-            else{
                 return true;
-            }
         }
-        else{
-            if(!preg_match($rule, $value)){
+        else
+        {
+            if (!preg_match($rule, $value)){
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit);
-            }else{
+            }
+            else
+            {
                 return true;
             }
             
@@ -55,30 +59,40 @@ class ArrayValidator{
     
     private function listValidate_($candidate, $prototype, $length = 0)
     {
-        if ($length && $length != count($candidate)){
+        if ($length && $length != count($candidate))
+        {
             return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate);
         }
-        if (is_array($prototype)){
-            foreach ($candidate as $key => $value){
-                if(!self::protoValidate($value, $prototype)){
+        if (is_array($prototype))
+        {
+            foreach ($candidate as $key => $value)
+            {
+                if(!self::protoValidate($value, $prototype))
+                {
                     return false;
                 }
             }
         }
-        elseif(is_string($prototype)){
-            foreach ($candidate as $key => $value) {
-                if(is_string($value)){
-                    if(!self::validateValue($value, $prototype, $candidate)){
+        elseif (is_string($prototype))
+        {
+            foreach ($candidate as $key => $value) 
+            {
+                if (is_string($value))
+                {
+                    if (!self::validateValue($value, $prototype, $candidate))
+                    {
                        return false;
                     }                    
                 }
                 
             }
         }
-        elseif($prototype === null){
+        elseif ($prototype === null)
+        {
             return true;
         }
-        else{
+        else
+        {
             return self::setError('#! Не верный тип данных в прототипе.', $prototype); 
         }
         return true;
@@ -86,16 +100,19 @@ class ArrayValidator{
     
     private function protoValidate_($element, $prototype)
     {
-        if (array_key_exists('_prototype_', $prototype) || array_key_exists('_length_', $prototype)){
+        if (array_key_exists('_prototype_', $prototype) || array_key_exists('_length_', $prototype))
+        {
             $_candidate_ = $element;
             $_prototype_ = array_key_exists('_prototype_', $prototype) ? $prototype['_prototype_'] : null;
             $_length_    = array_key_exists('_length_', $prototype) ? $prototype['_length_'] :  0;
-            if (!self::listValidate($_candidate_, $_prototype_, $_length_)){
+            if (!self::listValidate($_candidate_, $_prototype_, $_length_))
+            {
                 return false;
             }
         }
-        else{
-            if(!self::arrayValidate($element, $prototype)){
+        else
+        {
+            if (!self::arrayValidate($element, $prototype)){
                 return false;
             }
         }
@@ -104,27 +121,36 @@ class ArrayValidator{
     
     private  function arrayValidate_($value, $prototype)
     {
-        if (is_array($value)){
-            if(!self::arraySameKeys($value, $prototype)){
+        if (is_array($value))
+        {
+            if (!self::arraySameKeys($value, $prototype))
+            {
                 return false;
             }
-            foreach ($value as $index => $element) {
-                if (is_string($prototype[$index]) && is_string($element)){
-                    if(!self::validateValue($element, $prototype[$index], $value)){
+            foreach ($value as $index => $element)
+            {
+                if (is_string($prototype[$index]) && is_string($element))
+                {
+                    if (!self::validateValue($element, $prototype[$index], $value))
+                    {
                         return false;
                     }
                 }
-                elseif (is_array($element) && is_array($prototype[$index])){
-                    if (!self::protoValidate($element, $prototype[$index])){
+                elseif (is_array($element) && is_array($prototype[$index]))
+                {
+                    if (!self::protoValidate($element, $prototype[$index]))
+                    {
                         return false;
                     }
                 }
-                else{
+                else
+                {
                     return  self::setError('#! Не совпадают типы данных', ['element'=>$element,'prototype'=>$prototype[$index]]);
                 }
             }
         }
-        else{
+        else
+        {
             return self::setError('#! Не верный тип данных элемента. Ожидался: массив. Получен: немассив :-)', $value);
         }
         return true;  
@@ -132,24 +158,31 @@ class ArrayValidator{
     
     private function getLastError_()
     {
-        if(!empty($this)){
+        if (!empty($this))
+        {
             return $this->lasterror;
-        }else{
+        }
+        else
+        {
             return NULL;
         }
     }
     
     private function getCircuitError_()
     {
-        if(!empty($this)){
+        if (!empty($this))
+        {
             return $this->circuiterror;
-        }else{
+        }
+        else
+        {
             return NULL;
         }
     }
     private function setError_($string, $circuit = null)
     {
-        if(!empty($this)){
+        if (!empty($this))
+        {
             $this->lasterror = $string;
             $this->circuiterror = $circuit; 
         }
