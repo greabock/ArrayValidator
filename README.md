@@ -22,6 +22,7 @@ ArrayValidator
   var_dump(ArrayValidator::arrayValidate($array, $proto));
   //bool(true)
 ```
+
 объектный контекст(позволяет получить отчет об ошибке)
 ```php
   $v = new ArrayValidator;
@@ -44,3 +45,23 @@ ArrayValidator
   // }
 ```
 
+список прототипов, и его длина
+```php
+$array = array(
+        array('name' => 'vasya', 'age' => '22'),
+        array('name' => 'vasya', 'age' => '22'),
+        array('name' => 'vasya', 'age' => '22'),
+        array('name' => 'vasya', 'age' => '22'),
+        array('name' => 'vasya', 'age' => '22'),
+);
+$proto = array('name' => '/.*/', 'age'=> '/[0-9]+/');
+
+echo '<pre>';
+var_dump(ArrayValidator::listValidate($array, $proto));
+var_dump(ArrayValidator::listValidate($array, $proto, 3));
+var_dump(ArrayValidator::listValidate($array, $proto, 5));
+echo '</pre>';
+// bool(true)
+// bool(false)
+// bool(true)
+```
