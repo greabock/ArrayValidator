@@ -24,13 +24,24 @@ class ArrayValidator{
         }
     }
     
-    private function validateValue_($value, $rule)
+    private function validateValue_($value, $rule, $circuit)
     {
-        if(!empty($this->callback)) {
+        if(!empty($this) && !empty($this->callback)) {
             $callback = $this->callback;
-            return $callback($value, $rule);
-        }else{
-            return preg_match($rule, $value);
+            if(!$callback($value, $rule)){
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit);
+            }
+            else{
+                return true;
+            }
+        }
+        else{
+            if(!preg_match($rule, $value)){
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit);
+            }else{
+                return true;
+            }
+            
         }
     }
     
@@ -55,8 +66,8 @@ class ArrayValidator{
         elseif(is_string($prototype)){
             foreach ($candidate as $key => $value) {
                 if(is_string($value)){
-                    if(!self::validateValue($value, $prototype)){
-                       return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$prototype.'}.', $candidate);
+                    if(!self::validateValue($value, $prototype, $candidate)){
+                       return false;
                     }                    
                 }
                 
@@ -97,7 +108,7 @@ class ArrayValidator{
             }
             foreach ($value as $index => $element) {
                 if (is_string($prototype[$index]) && is_string($element)){
-                    if(!self::validateValue($element, $prototype[$index])){
+                    if(!self::validateValue($element, $prototype[$index], $value)){
                         return false;
                     }
                 }
