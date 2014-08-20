@@ -156,3 +156,22 @@ ArrayValidator
   var_dump(ArrayValidator::protoValidate($array, $proto));
   // bool(true)
 ```
+
+####Использование callback вместо стандартных регулярок (Доступно только в объектном контексте)
+```php
+  $v = new ArrayValidator;
+  $array1 = array('name' => 'vasya', 'age' => '22');
+  $array2 = array('name' => 'petya', 'age' => '22');
+  $proto = array('name' => 'vasya', 'age' => '22');
+  $callback = function($value, $rule){
+    if($value == $rule){
+        return true;
+    }
+  };
+  echo '<pre>';
+  var_dump($v->setCallback($callback)->arrayValidate($array1, $proto));
+  var_dump($v->setCallback($callback)->arrayValidate($array2, $proto));
+  echo '</pre>';
+  // bool(true)
+  // bool(false)
+```
