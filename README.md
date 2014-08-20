@@ -91,6 +91,7 @@ ArrayValidator
 
 ####Вложенный массив со списком простых прототипов. 
 > Примечание: Значения `_length_` и/или `_prototype_` могут быть опущены и поведение будет вполне предсказуемым.
+
 ```php
   $array = array(
     'name' => 'vasya', 
@@ -114,4 +115,28 @@ ArrayValidator
   var_dump(ArrayValidator::arrayValidate($array, $proto));
   // bool(true)
 ```
+
+####Вложенный массив со списком сложных прототипов.
+```php
+  $array = array(
+    'name' => 'vasya', 
+    'age' => '22', 
+    'comments' => array(
+            array('comment'=>'hello!', 'time'=>'3423423423'),
+            array('comment'=>'bye!'  , 'time'=>'3423423730'),
+        ),
+
+  );
+  $proto = array(
+    'name' => '/.*/',
+    'age'=> '/[0-9]+/',
+    'comments'=> array(
+        '_prototype_' => array('comment'=>'/.*/', 'time'=>'/[0-9]+/'),
+    ),
+  );
+  var_dump(ArrayValidator::arrayValidate($array, $proto));
+  // bool(true)
+```
+####Использование прототипа вместо параметров.
+
 
