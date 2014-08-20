@@ -23,10 +23,7 @@ class ArrayValidator{
         {
             return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2]);
         }
-        else 
-        {
-            return true;
-        }
+        return true;
     }
     
     private function validateValue_($value, $rule, $circuit)
@@ -36,18 +33,14 @@ class ArrayValidator{
             {
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit);
             }
-                return true;
+            return true;
         }
         else
         {
             if (!preg_match($rule, $value)){
                 return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit);
             }
-            else
-            {
-                return true;
-            }
-            
+            return true;
         }
     }
     
@@ -84,7 +77,6 @@ class ArrayValidator{
                        return false;
                     }                    
                 }
-                
             }
         }
         elseif ($prototype === null)
