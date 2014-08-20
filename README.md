@@ -14,7 +14,7 @@ ArrayValidator
 
 ###Использование
 
-####Простое сравнение массивов.
+####Простое сравнение массивов
 статичный контекст
 ```php
   $array = array('name' => 'vasya', 'age' => '22');
@@ -46,7 +46,7 @@ ArrayValidator
 ```
 > Все дальнейшие примеры будут приведены в статичном контексте (за исключением использования callback для валидации), но точно также могут быть использованы и в объектном контексте.
 
-####список прототипов, и его длина
+####Список прототипов, и его длина
 ```php
   $array = array(
     array('name' => 'vasya', 'age' => '22'),
@@ -67,7 +67,7 @@ ArrayValidator
   // bool(true)
 ```
 
-####простой вложенный массив
+####Простой вложенный массив
 ```php
   $array = array(
     'name' => 'vasya', 
@@ -138,5 +138,21 @@ ArrayValidator
   // bool(true)
 ```
 ####Использование прототипа вместо параметров.
-
-
+```php
+   $array = array(
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+    array('name' => 'vasya', 'age' => '22'),
+);
+  $proto = array(
+    '_length_'=>5,
+    '_prototype_'=> array(
+        'name' => '/.*/',
+        'age'=> '/[0-9]+/',
+    ),
+  );
+  var_dump(ArrayValidator::protoValidate($array, $proto));
+  // bool(true)
+```
