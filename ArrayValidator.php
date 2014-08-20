@@ -1,7 +1,8 @@
 <?php
 
 class ArrayValidator{
-	private $lasterror;
+	
+    private $lasterror;
 	private $circuiterror;
 
 	public function __call($name, $args){
@@ -23,7 +24,8 @@ class ArrayValidator{
         }
     }
 
-    private function validateValue_($value, $rule){
+    private function validateValue_($value, $rule)
+    {
         if(!empty($this->callback)) {
         	$callback = $this->callback;
             return $callback($value, $rule);
@@ -32,12 +34,14 @@ class ArrayValidator{
         }
     }
 
-    private function setCallback_(callable $callback){
+    private function setCallback_(callable $callback)
+    {
         $this->callback = $callback;
         return $this;
     }
 
-    private function listValidate_($candidate, $prototype, $length = 0){
+    private function listValidate_($candidate, $prototype, $length = 0)
+    {
         if ($length && $length != count($candidate)){
             return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate);
         }
@@ -67,7 +71,8 @@ class ArrayValidator{
         return true;
     }
 
-    private function protoValidate($element, $prototype){
+    private function protoValidate($element, $prototype)
+    {
     	if (array_key_exists('_prototype_', $prototype) || array_key_exists('_length_', $prototype)){
         	$_candidate_ = $element;
             $_prototype_ = array_key_exists('_prototype_', $prototype) ? $prototype['_prototype_'] : null;
@@ -84,7 +89,8 @@ class ArrayValidator{
         return true;
     }
 
-    private  function arrayValidate_($value, $prototype){
+    private  function arrayValidate_($value, $prototype)
+    {
         if (is_array($value)){
             if(!self::arraySameKeys($value, $prototype)){
                 return false;
@@ -92,13 +98,11 @@ class ArrayValidator{
             foreach ($value as $index => $element) {
                 if (is_string($prototype[$index]) && is_string($element)){
                     if(!self::validateValue($element, $prototype[$index])){
-                        # чего-то там внутри случилось - необрабатывать.
                         return false;
                     }                            
                 }
                 elseif (is_array($element) && is_array($prototype[$index])){
                 	if (!self::protoValidate($element, $prototype[$index])){
-                		# чего-то там внутри случилось - необрабатывать.
                 		return false;
             		}
                 }
@@ -113,7 +117,8 @@ class ArrayValidator{
         return true;  
     }
 
-    private function getLastError_(){
+    private function getLastError_()
+    {
     	if(!empty($this)){
             return $this->lasterror;
         }else{
@@ -121,14 +126,16 @@ class ArrayValidator{
         }
     }
 
-    private function getCircuitError_(){
+    private function getCircuitError_()
+    {
     	if(!empty($this)){
             return $this->circuiterror;
         }else{
         	return NULL;
         }
     }
-    private function setError_($string, $circuit = null){
+    private function setError_($string, $circuit = null)
+    {
         if(!empty($this)){
             $this->lasterror = $string;
             $this->circuiterror = $circuit; 
@@ -136,37 +143,3 @@ class ArrayValidator{
         return false;
     }
 }
-
-$array = [
-
-            'date' => '',
-            'time' => '',
-         'article' => '',
-           'users' => [
-                'asd' => '22',
-                'ass' => '22',
-                'asa' => '22',
-            ],
-];
-
-$proto = [
-              'date' => '',
-              'time' => '',
-           'article' => '',
-             'users' => ['_length_'=>3],
-    ];
-
-
-$funcCb = function($value, $rule){
-    return true;
-};
-
-
-$validator = new ArrayValidator;
-//$validator->set_callback($funcCb);
-$validator->setCallback(function($value, $rule){
-	return true;
-});
-var_dump($validator->arrayValidate($array, $proto));
-var_dump($validator->getLastError());
-var_dump($validator->getCircuitError());
