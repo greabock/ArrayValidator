@@ -15,9 +15,32 @@ ArrayValidator
 ###Использование
 
 ####Простое сравнение массивов.
+статичный контекст
 ```php
   $array = array('name' => 'vasya', 'age' => '22');
   $proto = array('name' => '/.*/', 'age'=> '/[0-9]+/');
   var_dump(ArrayValidator::arrayValidate($array, $proto));
   //bool(true)
 ```
+объектный контекст(позволяет получить отчет об ошибке)
+```php
+  $v = new ArrayValidator;
+  $array = array('name' => 'vasya', 'age' => '22');
+  $proto = array('name' => '/.*/', 'age'=> '/[A-Z]+/');
+  
+  echo '<pre>';
+  var_dump($v->arrayValidate($array, $proto));
+  var_dump($v->getLastError());
+  var_dump($v->getCircuitError());
+  echo '</pre>';
+ 
+  // bool(false)
+  // string(93) "#! Значение {22} не прошло валидацию по правилу {/[A-Z]+/}."
+  // array(2) {
+  //   ["name"]=>
+  //   string(5) "vasya"
+  //   ["age"]=>
+  //   string(2) "22"
+  // }
+```
+
