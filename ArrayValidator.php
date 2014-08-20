@@ -7,14 +7,12 @@ class ArrayValidator{
     
     public function __call($name, $args)
     {
-        $name = $name . '_' ;
-        return call_user_func_array([self ,$name], $args);
+        return call_user_func_array([self ,$name . '_'], $args);
     }
     
     public static function __callStatic($name, $args)
     {
-        $name = $name . '_' ;
-        return call_user_func_array([self,$name], $args);
+        return call_user_func_array([self,$name . '_'], $args);
     }
     
     private function arraySameKeys_(Array $array1, Array $array2)
