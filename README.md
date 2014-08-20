@@ -47,21 +47,21 @@ ArrayValidator
 
 список прототипов, и его длина
 ```php
-$array = array(
+  $array = array(
         array('name' => 'vasya', 'age' => '22'),
         array('name' => 'vasya', 'age' => '22'),
         array('name' => 'vasya', 'age' => '22'),
         array('name' => 'vasya', 'age' => '22'),
         array('name' => 'vasya', 'age' => '22'),
-);
-$proto = array('name' => '/.*/', 'age'=> '/[0-9]+/');
+  );
+  $proto = array('name' => '/.*/', 'age'=> '/[0-9]+/');
 
-echo '<pre>';
-var_dump(ArrayValidator::listValidate($array, $proto));
-var_dump(ArrayValidator::listValidate($array, $proto, 3));
-var_dump(ArrayValidator::listValidate($array, $proto, 5));
-echo '</pre>';
-// bool(true)
-// bool(false)
-// bool(true)
+  echo '<pre>';
+  var_dump(ArrayValidator::listValidate($array, $proto));
+  var_dump(ArrayValidator::listValidate($array, $proto, 3));
+  var_dump(ArrayValidator::listValidate($array, $proto, 5));
+  echo '</pre>';
+  // bool(true)
+  // bool(false)
+  // bool(true)
 ```
