@@ -167,6 +167,7 @@ ArrayValidator
     if($value == $rule){
         return true;
     }
+    return false;
   };
   echo '<pre>';
   var_dump($v->setCallback($callback)->arrayValidate($array1, $proto));
