@@ -21,7 +21,7 @@ class ArrayValidator{
     {
         if (array_merge(array_diff_key($array1, $array2), array_diff_key($array2, $array1)))
         {
-            return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2], 10);
+            return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2], 10, $that);
         }
         return true;
     }
@@ -156,9 +156,7 @@ class ArrayValidator{
             return $that->lasterror;
         }
         else
-        {
-            return NULL;
-        }
+        return NULL;
     }
 
     private static function getErrorCode_($that = null)
@@ -167,10 +165,7 @@ class ArrayValidator{
         {
             return $that->errorcode;
         }
-        else
-        {
-            return NULL;
-        }
+        return NULL;
     }
     
     private static function getCircuitError_($that = null)
@@ -179,10 +174,7 @@ class ArrayValidator{
         {
             return $that->circuiterror;
         }
-        else
-        {
-            return NULL;
-        }
+        return NULL;
     }
     private static function setError_($string, $circuit = null, $errorcode = null, $that = null)
     {
