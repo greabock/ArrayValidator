@@ -3,6 +3,7 @@
 class ArrayValidator{
 
     private $lasterror;
+    private $errorcode;
     private $circuiterror;
     
     public function __call($name, $args)
@@ -19,7 +20,7 @@ class ArrayValidator{
     {
         if (array_merge(array_diff_key($array1, $array2), array_diff_key($array2, $array1)))
         {
-            return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2]);
+            return self::setError('#! Не совпали ключи массивов.', ['element' => $array1, 'prototype' => $array2], 10);
         }
         return true;
     }
@@ -30,14 +31,14 @@ class ArrayValidator{
         if (!empty($this) && !empty($this->callback)) {
             if (!call_user_func($this->callback, $value, $rule))
             {
-                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit);
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit, 21);
             }
             return true;
         }
         else
         {
             if (!preg_match($rule, (string)$value)){
-                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit);
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit, 20);
             }
             return true;
         }
@@ -53,7 +54,7 @@ class ArrayValidator{
     {
         if ($length && $length != count($candidate))
         {
-            return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate);
+            return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate, 30);
         }
         if (is_array($prototype))
         {
@@ -84,7 +85,7 @@ class ArrayValidator{
         }
         else
         {
-            return self::setError('#! Не верный тип данных в прототипе.', $prototype); 
+            return self::setError('#! Не верный тип данных в прототипе. Допустимые значения: (string), (array), (null)' , $prototype, 40); 
         }
         return true;
     }
@@ -136,13 +137,13 @@ class ArrayValidator{
                 }
                 else
                 {
-                    return  self::setError('#! Не совпадают типы данных', ['element'=>$element,'prototype'=>$prototype[$index]]);
+                    return  self::setError('#! Не совпадают типы данных', ['element'=>$element,'prototype'=>$prototype[$index]], 41);
                 }
             }
         }
         else
         {
-            return self::setError('#! Не верный тип данных элемента. Ожидался: массив. Получен: немассив :-)', $value);
+            return self::setError('#! Не верный тип данных элемента. Ожидался: Array. Получен: '. gettype($value) , $value, 42);
         }
         return true;  
     }
@@ -152,6 +153,18 @@ class ArrayValidator{
         if (!empty($this))
         {
             return $this->lasterror;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    private function getErrorCode_()
+    {
+        if (!empty($this))
+        {
+            return $this->errorcode;
         }
         else
         {
@@ -170,12 +183,13 @@ class ArrayValidator{
             return NULL;
         }
     }
-    private function setError_($string, $circuit = null)
+    private function setError_($string, $circuit = null, $errorcode = null)
     {
         if (!empty($this))
         {
             $this->lasterror = $string;
             $this->circuiterror = $circuit; 
+            $this->errorcode = $errorcode;
         }
         return false;
     }
