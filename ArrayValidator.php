@@ -2,21 +2,22 @@
 
 class ArrayValidator{
 
-    private $lasterror;
-    private $errorcode;
-    private $circuiterror;
+    public $lasterror;
+    public $errorcode;
+    public $circuiterror;
     
     public function __call($name, $args)
     {
-        return call_user_func_array([ self, $name . '_' ], $args);
+        $args[] = $this;
+        return call_user_func_array([ $this, $name . '_' ], $args);
     }
     
     public static function __callStatic($name, $args)
     {
-        return call_user_func_array([ self, $name . '_' ], $args);
+        return forward_static_call_array([ __CLASS__, $name . '_' ], $args);
     }
     
-    private function arraySameKeys_(Array $array1, Array $array2)
+    private static function arraySameKeys_(Array $array1, Array $array2, $that = null)
     {
         if (array_merge(array_diff_key($array1, $array2), array_diff_key($array2, $array1)))
         {
@@ -25,42 +26,42 @@ class ArrayValidator{
         return true;
     }
     
-    private function validateValue_($value, $rule, $circuit)
+    private static function validateValue_($value, $rule, $circuit, $that = null)
     {   
         
-        if (!empty($this) && !empty($this->callback)) {
-            if (!call_user_func($this->callback, $value, $rule))
+        if (!empty($that) && !empty($that->callback)) {
+            if (!call_user_func($that->callback, $value, $rule))
             {
-                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit, 21);
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}. (Коллбэк)', $circuit, 21, $that);
             }
             return true;
         }
         else
         {
             if (!preg_match($rule, (string)$value)){
-                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit, 20);
+                return self::setError('#! Значение {' . $value . '} не прошло валидацию по правилу {'.$rule.'}.', $circuit, 20, $that);
             }
             return true;
         }
     }
     
-    private function setCallback_(callable $callback)
+    private static function setCallback_(callable $callback, $that = null)
     {
-        $this->callback = $callback;
-        return $this;
+        $that->callback = $callback;
+        return $that;
     }
     
-    private function listValidate_($candidate, $prototype, $length = 0)
+    private static function listValidate_($candidate, $prototype = null, $length = 0, $that = null)
     {
         if ($length && $length != count($candidate))
         {
-            return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate, 30);
+            return self::setError('#! Длина массива не соответствует заявленной. Получено: ' . count($candidate). '. Должно быть: '. $length .'.', $candidate, 30, $that);
         }
         if (is_array($prototype))
         {
             foreach ($candidate as $key => $value)
             {
-                if(!self::protoValidate($value, $prototype))
+                if(!self::protoValidate($value, $prototype, $that))
                 {
                     return false;
                 }
@@ -72,7 +73,7 @@ class ArrayValidator{
             {
                 if (is_string($value))
                 {
-                    if (!self::validateValue($value, $prototype, $candidate))
+                    if (!self::validateValue($value, $prototype, $candidate, $that))
                     {
                        return false;
                     }                    
@@ -85,37 +86,37 @@ class ArrayValidator{
         }
         else
         {
-            return self::setError('#! Не верный тип данных в прототипе. Допустимые значения: (string), (array), (null)' , $prototype, 40); 
+            return self::setError('#! Не верный тип данных в прототипе. Допустимые значения: (string), (array), (null)' , $prototype, 40, $that); 
         }
         return true;
     }
     
-    private function protoValidate_($element, $prototype)
+    private static function protoValidate_($element, $prototype, $that = null)
     {
         if (array_key_exists('_prototype_', $prototype) || array_key_exists('_length_', $prototype))
         {
             $_candidate_ = $element;
             $_prototype_ = array_key_exists('_prototype_', $prototype) ? $prototype['_prototype_'] : null;
             $_length_    = array_key_exists('_length_', $prototype) ? $prototype['_length_'] :  0;
-            if (!self::listValidate($_candidate_, $_prototype_, $_length_))
+            if (!self::listValidate($_candidate_, $_prototype_, $_length_, $that))
             {
                 return false;
             }
         }
         else
         {
-            if (!self::arrayValidate($element, $prototype)){
+            if (!self::arrayValidate($element, $prototype, $that)){
                 return false;
             }
         }
         return true;
     }
     
-    private  function arrayValidate_($value, $prototype)
+    private static  function arrayValidate_($value, $prototype, $that = null)
     {
         if (is_array($value))
         {
-            if (!self::arraySameKeys($value, $prototype))
+            if (!self::arraySameKeys($value, $prototype, $that))
             {
                 return false;
             }
@@ -123,36 +124,36 @@ class ArrayValidator{
             {
                 if (is_string($prototype[$index]) && (is_string($element)||is_null($element)||is_numeric($element)||is_bool($element)))
                 {
-                    if (!self::validateValue($element, $prototype[$index], $value))
+                    if (!self::validateValue($element, $prototype[$index], $value, $that))
                     {
                         return false;
                     }
                 }
                 elseif (is_array($element) && is_array($prototype[$index]))
                 {
-                    if (!self::protoValidate($element, $prototype[$index]))
+                    if (!self::protoValidate($element, $prototype[$index], $that))
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    return  self::setError('#! Не совпадают типы данных', ['element'=>$element,'prototype'=>$prototype[$index]], 41);
+                    return  self::setError('#! Не совпадают типы данных', ['element'=>$element,'prototype'=>$prototype[$index]], 41, $that);
                 }
             }
         }
         else
         {
-            return self::setError('#! Не верный тип данных элемента. Ожидался: Array. Получен: '. gettype($value) , $value, 42);
+            return self::setError('#! Не верный тип данных элемента. Ожидался: Array. Получен: '. gettype($value) , $value, 42, $that);
         }
         return true;  
     }
     
-    private function getLastError_()
+    private static function getLastError_($that = null)
     {
-        if (!empty($this))
+        if (!empty($that))
         {
-            return $this->lasterror;
+            return $that->lasterror;
         }
         else
         {
@@ -160,11 +161,11 @@ class ArrayValidator{
         }
     }
 
-    private function getErrorCode_()
+    private static function getErrorCode_($that = null)
     {
-        if (!empty($this))
+        if (!empty($that))
         {
-            return $this->errorcode;
+            return $that->errorcode;
         }
         else
         {
@@ -172,24 +173,24 @@ class ArrayValidator{
         }
     }
     
-    private function getCircuitError_()
+    private static function getCircuitError_($that = null)
     {
-        if (!empty($this))
+        if (!empty($that))
         {
-            return $this->circuiterror;
+            return $that->circuiterror;
         }
         else
         {
             return NULL;
         }
     }
-    private function setError_($string, $circuit = null, $errorcode = null)
+    private static function setError_($string, $circuit = null, $errorcode = null, $that = null)
     {
-        if (!empty($this))
+        if (!empty($that))
         {
-            $this->lasterror = $string;
-            $this->circuiterror = $circuit; 
-            $this->errorcode = $errorcode;
+            $that->lasterror = $string;
+            $that->circuiterror = $circuit; 
+            $that->errorcode = $errorcode;
         }
         return false;
     }
