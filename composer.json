@@ -1,0 +1,7 @@
+{
+    "name": "greabock/ArrayValidator",
+    "description": "Validation for complex structured arrays",
+    "require": {
+        "php": ">=5.3.0",
+    }
+}
