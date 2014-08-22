@@ -1,6 +1,6 @@
 #ArrayValidator
 Теперь без ошибок ворнингов и нотайсов!
-Вопросы в [чатик](https://gitter.im/greabock/ArrayValidator)
+Вопросы в [чатик](https://gitter.im/greabock/ArrayValidator).
 ##Описание
 ###Данный класс позволяет:
  - проверять сложноструктурированые массивы на соответствие прототипам
